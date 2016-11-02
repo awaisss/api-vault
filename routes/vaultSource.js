@@ -6,6 +6,13 @@ var Promise = require('bluebird');
 var app = express();
 var cors = require('cors');
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
@@ -18,10 +25,12 @@ var options = {
 var vault = require('node-vault')(options);
 
 /* Save and return a secret */
-router.post('/api/secret',function(req,res){
-  var secret_data = req.body;
-  console.log(secret_data);
-  vault.write('secret/myuser',secret_data)
+router.post('/secret',function(req,res){
+  console.log('========================');
+  console.log('request body');
+  console.log(req.body);
+
+  vault.write('secret/myuser',req.body)
     .then(function(data){
       
         vault.read('secret/myuser')
